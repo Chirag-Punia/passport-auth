@@ -1,3 +1,9 @@
+const userSchema =  require("../models/user.js");
+
+let mongoose = require("mongoose");
+let User = mongoose.model("User",userSchema);
+let bcrypt = require("bcryptjs");
+
 const express = require("express");
 
 const router = express.Router();
@@ -32,7 +38,41 @@ router.post("/register",(req,res) =>{
         })
     }
     else {
-        res.send("Pass");
+        User.findOne({email : email}).then(User => {
+            if(User){
+                errors.push({msg : "User already exist"});
+                res.render("register",{
+                    errors,
+                    name,
+                    email,
+                    password,
+                    password2
+                });
+            }
+            else {
+                let newUser = new mongoose.model("newUser",userSchema)({
+                    name : name,
+                    email : email,
+                    password : password
+                });
+                console.log(newUser);
+                //hash password
+                bcrypt.genSalt(10,(err,salt) => {
+                    bcrypt.hash(newUser.password,salt,(err,hash) => {
+                        if(err) throw err;
+                        newUser.password = hash;
+                        //save user
+                        newUser.save()
+                            .then(user => {
+                                res.redirect("/users/login");
+                            })
+                            .catch(err => console.log(err))
+                    })
+                })
+            }
+            }
+
+        )
     }
 
 })
