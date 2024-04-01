@@ -10,7 +10,9 @@ const PORT = process.env.PORT || 5000;
 
 const db = require("./config/keys").MongoURI;
 
-//connect to Mongo
+
+app.use(express.urlencoded({extended : false}))
+//connect to MongoDB
 mongoose.connect(db).then(() =>{
     console.log("MongoDB connected")
 }).catch(err => console.log(err));
@@ -20,6 +22,7 @@ mongoose.connect(db).then(() =>{
 //routes
 
 app.use(expressLayouts);
+
 app.set("view engine", "ejs");
 
 app.use('/' , require("./routes/index"));
