@@ -4,7 +4,18 @@ const app = express();
 
 const expressLayouts = require("express-ejs-layouts");
 
+const mongoose = require('mongoose');
+
 const PORT = process.env.PORT || 5000;
+
+const db = require("./config/keys").MongoURI;
+
+//connect to Mongo
+mongoose.connect(db).then(() =>{
+    console.log("MongoDB connected")
+}).catch(err => console.log(err));
+
+
 
 //routes
 
