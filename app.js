@@ -16,8 +16,7 @@ const db = require('./config/keys').MongoURI;
 // Connect to MongoDB
 mongoose
     .connect(
-        db,
-        { useNewUrlParser: true ,useUnifiedTopology: true}
+        db
     )
     .then(() => console.log('MongoDB Connected'))
     .catch(err => console.log(err));
@@ -54,4 +53,4 @@ app.use('/users', require('./routes/users.js'));
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, (`Server running on  ${PORT}`));
+app.listen(PORT, console.log(`Server running on  ${PORT}`));
