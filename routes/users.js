@@ -1,21 +1,17 @@
 const userSchema =  require("../models/user.js");
-
-let mongoose = require("mongoose");
-let User = mongoose.model("User",userSchema);
-let bcrypt = require("bcryptjs");
-
+const mongoose = require("mongoose");
+const user = mongoose.model("user",userSchema);
+const bcrypt = require("bcryptjs");
 const express = require("express");
-
 const router = express.Router();
+const passport = require("passport");
 
 router.get("/login", (req,res) => {
     res.render("login");
-})
-
+});
 router.get("/register", (req,res) => {
     res.render("register");
-})
-
+});
 router.post("/register",(req,res) =>{
     let {name,email,password,password2} = req.body;
     let errors = [];
@@ -38,8 +34,8 @@ router.post("/register",(req,res) =>{
         })
     }
     else {
-        User.findOne({email : email}).then(User => {
-            if(User){
+        user.findOne({email : email}).then(user => {
+            if(user){
                 errors.push({msg : "User already exist"});
                 res.render("register",{
                     errors,
@@ -50,7 +46,7 @@ router.post("/register",(req,res) =>{
                 });
             }
             else {
-                let newUser = new mongoose.model("newUser",userSchema)({
+                let newUser = new mongoose.model("user",userSchema)({
                     name : name,
                     email : email,
                     password : password
@@ -71,10 +67,26 @@ router.post("/register",(req,res) =>{
                 })
             }
             }
-
         )
     }
 
-})
+});
+
+//login handle
+router.post('/login', (req, res, next) => {
+    passport.authenticate('local', {
+        successRedirect: '/dashboard',
+        failureRedirect: '/users/login',
+        failureFlash: true
+    })(req, res, next);
+});
+
+// Logout
+router.get('/logout', (req, res,next) => {
+    req.logout(function(err) {
+        if (err) { return next(err); }
+        res.redirect('/users/login');
+    });
+});
 
 module.exports = router;
